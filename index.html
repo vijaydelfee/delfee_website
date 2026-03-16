@@ -4,6 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SpendLens by Delfee — AI Cost Observability</title>
+<meta name="description" content="SpendLens gives SaaS companies real visibility and control over tenant-level AI usage — track costs, route prompts intelligently, and prevent runaway AI bills." />
+<meta property="og:title" content="SpendLens by Delfee — AI Cost Observability" />
+<meta property="og:description" content="Real visibility and control over tenant-level AI usage. Track costs, route prompts intelligently, and prevent runaway AI bills." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%230A1628'/><path d='M8 22V10h4c4 0 6 2 6 6s-2 6-6 6H8z' fill='%23C9A84C'/></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet" />
@@ -28,7 +33,7 @@
     --sans: 'DM Sans', system-ui, sans-serif;
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; scroll-padding-top: 68px; }
 
   body {
     font-family: var(--sans);
@@ -85,6 +90,50 @@
     transition: background 0.2s, transform 0.15s;
   }
   nav .nav-cta:hover { background: var(--gold-bright); transform: translateY(-1px); }
+
+  /* ─── HAMBURGER ─── */
+  .nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 36px; height: 36px;
+    position: relative;
+    z-index: 101;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--white);
+    position: absolute; left: 7px;
+    transition: transform 0.3s, opacity 0.2s;
+  }
+  .nav-hamburger span:nth-child(1) { top: 10px; }
+  .nav-hamburger span:nth-child(2) { top: 17px; }
+  .nav-hamburger span:nth-child(3) { top: 24px; }
+  .nav-hamburger.open span:nth-child(1) { top: 17px; transform: rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { top: 17px; transform: rotate(-45deg); }
+
+  .nav-menu-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,22,40,0.98);
+    z-index: 99;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+  .nav-menu-overlay.open { display: flex; }
+  .nav-menu-overlay a {
+    color: var(--white);
+    font-family: var(--serif);
+    font-size: 28px;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-menu-overlay a:hover { color: var(--gold); }
 
   /* ─── HERO ─── */
   #hero {
@@ -187,7 +236,7 @@
     box-shadow: 0 8px 24px rgba(201,168,76,0.35);
   }
   .btn-primary::after {
-    content: '→';
+    content: '\2192';
     transition: transform 0.2s;
   }
   .btn-primary:hover::after { transform: translateX(4px); }
@@ -260,7 +309,7 @@
     position: relative;
   }
   .diag-arrow::after {
-    content: '▼';
+    content: '\25BC';
     position: absolute; bottom: -6px; left: 50%;
     transform: translateX(-50%);
     color: rgba(201,168,76,0.5);
@@ -552,6 +601,56 @@
   }
   .feature-card:hover .feature-number { color: rgba(201,168,76,0.08); }
 
+  /* ─── WHO IT'S FOR ─── */
+  #personas { background: var(--navy); padding: 100px 5%; }
+  .personas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 64px;
+    background: rgba(201,168,76,0.15);
+  }
+  .persona-card {
+    background: var(--navy-mid);
+    padding: 48px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .persona-card:hover { background: var(--navy-light); }
+  .persona-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .persona-card:hover::before { transform: scaleX(1); }
+  .persona-role {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .persona-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--white);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .persona-desc {
+    font-size: 15px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.75;
+    font-weight: 300;
+  }
+  .persona-desc .highlight { color: var(--gold); font-weight: 500; }
+
   /* ─── EARLY ACCESS ─── */
   #early-access {
     background: var(--navy);
@@ -588,6 +687,7 @@
   .form-field {
     display: flex; flex-direction: column; gap: 6px;
     text-align: left;
+    position: relative;
   }
   .form-field label {
     font-size: 12px;
@@ -612,6 +712,18 @@
     border-color: var(--gold-dim);
     background: rgba(255,255,255,0.08);
   }
+  .form-field input.field-error {
+    border-color: #E87C5A;
+  }
+  .field-error-msg {
+    font-size: 12px;
+    color: #E87C5A;
+    margin-top: 4px;
+    display: none;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .field-error-msg.visible { display: block; }
   .form-submit {
     background: var(--gold);
     color: var(--navy);
@@ -627,6 +739,7 @@
     width: 100%;
   }
   .form-submit:hover { background: var(--gold-bright); transform: translateY(-1px); }
+  .form-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   .ea-confirmation {
     display: none;
     text-align: center;
@@ -701,7 +814,11 @@
     .problem-grid { grid-template-columns: 1fr; }
     .how-grid { grid-template-columns: 1fr; gap: 48px; }
     .features-grid { grid-template-columns: 1fr; }
+    .personas-grid { grid-template-columns: 1fr; }
     footer { flex-direction: column; align-items: flex-start; }
+
+    nav .nav-cta { display: none; }
+    .nav-hamburger { display: block; }
   }
   @media (max-width: 600px) {
     section { padding: 72px 5%; }
@@ -709,6 +826,7 @@
     .stat-card { padding: 28px 20px; }
     .problem-col { padding: 36px 24px; }
     .feature-card { padding: 36px 28px; }
+    .persona-card { padding: 36px 24px; }
   }
 
   /* ─── SCROLL ANIMATIONS ─── */
@@ -728,13 +846,28 @@
 
 <!-- NAV -->
 <nav>
-  <a href="#hero" class="nav-logo">
+  <a href="#hero" class="nav-logo" aria-label="SpendLens by Delfee - Home">
     <span class="logo-primary">SpendLens</span>
     <span class="logo-by">by</span>
     <span class="logo-brand">Delfee</span>
   </a>
-  <a href="#early-access" class="nav-cta">Request Early Access</a>
+  <a href="#early-access" class="nav-cta" aria-label="Request early access to SpendLens">Request Early Access</a>
+  <button class="nav-hamburger" aria-label="Open navigation menu" onclick="toggleMobileNav()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 </nav>
+
+<!-- MOBILE NAV OVERLAY -->
+<div class="nav-menu-overlay" id="mobile-nav">
+  <a href="#stats" onclick="closeMobileNav()">AI Economics</a>
+  <a href="#problem" onclick="closeMobileNav()">The Gap</a>
+  <a href="#how" onclick="closeMobileNav()">How It Works</a>
+  <a href="#features" onclick="closeMobileNav()">Features</a>
+  <a href="#personas" onclick="closeMobileNav()">Who It's For</a>
+  <a href="#early-access" onclick="closeMobileNav()">Request Early Access</a>
+</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -748,7 +881,7 @@
         SpendLens gives SaaS companies real visibility and control over tenant-level AI usage — and intelligently routes prompts to the most efficient models.
       </p>
       <div class="hero-actions">
-        <a href="#early-access" class="btn-primary">Request Early Access</a>
+        <a href="#early-access" class="btn-primary" aria-label="Request early access to SpendLens">Request Early Access</a>
         <a href="#how" class="btn-ghost">See how it works</a>
       </div>
     </div>
@@ -790,7 +923,7 @@
         <div class="stat-desc">AI spend driven by a small cohort of power users</div>
       </div>
       <div class="stat-card fade-up fade-up-delay-2">
-        <div class="stat-number">10<span>×</span></div>
+        <div class="stat-number">10<span>&times;</span></div>
         <div class="stat-desc">Difference in AI usage and cost across tenants</div>
       </div>
       <div class="stat-card fade-up fade-up-delay-3">
@@ -818,19 +951,19 @@
           <span>Current Reality</span>
         </div>
         <div class="problem-item">
-          <div class="icon">✕</div>
+          <div class="icon">&times;</div>
           <span>AI costs appear only after the bill arrives</span>
         </div>
         <div class="problem-item">
-          <div class="icon">✕</div>
+          <div class="icon">&times;</div>
           <span>No visibility into which tenants drive spend</span>
         </div>
         <div class="problem-item">
-          <div class="icon">✕</div>
+          <div class="icon">&times;</div>
           <span>Heavy users silently inflate AI costs</span>
         </div>
         <div class="problem-item">
-          <div class="icon">✕</div>
+          <div class="icon">&times;</div>
           <span>Premium models used even for simple prompts</span>
         </div>
       </div>
@@ -839,19 +972,19 @@
           <span>With SpendLens</span>
         </div>
         <div class="problem-item">
-          <div class="icon">✓</div>
+          <div class="icon">&check;</div>
           <span>Identify high-cost tenants instantly</span>
         </div>
         <div class="problem-item">
-          <div class="icon">✓</div>
+          <div class="icon">&check;</div>
           <span>Real-time visibility into tenant AI usage</span>
         </div>
         <div class="problem-item">
-          <div class="icon">✓</div>
+          <div class="icon">&check;</div>
           <span>Detect unusual or abusive consumption</span>
         </div>
         <div class="problem-item">
-          <div class="icon">✓</div>
+          <div class="icon">&check;</div>
           <span>Route prompts to the right AI model automatically</span>
         </div>
       </div>
@@ -870,7 +1003,7 @@
     <div class="how-grid">
       <div class="how-diagram fade-up">
         <div class="how-box">
-          <div class="how-box-icon">⌨</div>
+          <div class="how-box-icon">&iscr;</div>
           <div class="how-box-text">
             <div class="label">Input</div>
             <div class="title">User Prompt</div>
@@ -878,7 +1011,7 @@
         </div>
         <div class="how-line"></div>
         <div class="how-box how-center-box">
-          <div class="how-box-icon" style="background:rgba(201,168,76,0.2); border-color: var(--gold);">◈</div>
+          <div class="how-box-icon" style="background:rgba(201,168,76,0.2); border-color: var(--gold);">&#x25C8;</div>
           <div class="how-box-text">
             <div class="label">Intelligence Layer</div>
             <div class="title">SpendLens Routing Engine</div>
@@ -922,27 +1055,55 @@
     <div class="features-grid">
       <div class="feature-card fade-up">
         <div class="feature-number">01</div>
-        <div class="feature-icon">⇄</div>
+        <div class="feature-icon">&hercon;</div>
         <h3>Intelligent Model Routing</h3>
         <p>Automatically match prompt complexity with the most efficient LLM. Stop paying GPT-4 prices for GPT-3.5 tasks.</p>
       </div>
       <div class="feature-card fade-up fade-up-delay-1">
         <div class="feature-number">02</div>
-        <div class="feature-icon">◉</div>
+        <div class="feature-icon">&#x25C9;</div>
         <h3>Tenant-Level AI Observability</h3>
         <p>See exactly which customers and product features generate AI costs. Turn opaque spend into actionable intelligence.</p>
       </div>
       <div class="feature-card fade-up fade-up-delay-2">
         <div class="feature-number">03</div>
-        <div class="feature-icon">⊡</div>
+        <div class="feature-icon">&#x22A1;</div>
         <h3>AI Spend Guardrails</h3>
         <p>Set tenant budgets, usage caps, and routing rules. Prevent runaway AI bills before they appear on your invoice.</p>
       </div>
       <div class="feature-card fade-up fade-up-delay-3">
         <div class="feature-number">04</div>
-        <div class="feature-icon">▤</div>
+        <div class="feature-icon">&#x25A4;</div>
         <h3>Executive AI Cost Dashboard</h3>
         <p>Real-time insights into AI usage and financial impact — built for CTOs, CFOs, and the stakeholders who need them most.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section id="personas">
+  <div class="section-inner">
+    <div class="fade-up">
+      <div class="section-eyebrow" style="color: var(--gold-dim);">Who It's For</div>
+      <h2 class="section-title section-title-light">Built for the People Who<br>Own AI Economics</h2>
+      <p class="section-body" style="color: rgba(255,255,255,0.5);">SpendLens gives each stakeholder the view they need to make smarter decisions about AI spend.</p>
+    </div>
+    <div class="personas-grid">
+      <div class="persona-card fade-up fade-up-delay-1">
+        <div class="persona-role">CTO</div>
+        <div class="persona-title">Architect AI Infrastructure with Cost Awareness</div>
+        <p class="persona-desc">Understand which models serve which use cases best. <span class="highlight">Route intelligently, scale confidently</span>, and keep engineering teams focused on building — not debugging bills.</p>
+      </div>
+      <div class="persona-card fade-up fade-up-delay-2">
+        <div class="persona-role">CFO</div>
+        <div class="persona-title">Turn AI Spend into a Predictable Line Item</div>
+        <p class="persona-desc">Get real-time visibility into AI costs by tenant and feature. <span class="highlight">Set guardrails, forecast accurately</span>, and ensure AI margins stay healthy as you scale.</p>
+      </div>
+      <div class="persona-card fade-up fade-up-delay-3">
+        <div class="persona-role">Head of Product</div>
+        <div class="persona-title">Ship AI Features Without the Cost Surprise</div>
+        <p class="persona-desc">Know exactly what each AI feature costs per user. <span class="highlight">Make informed trade-offs</span> between capability and cost before features hit production.</p>
       </div>
     </div>
   </div>
@@ -958,21 +1119,23 @@
     <div class="ea-form fade-up" id="ea-form">
       <div class="form-field">
         <label for="name">Full Name</label>
-        <input type="text" id="name" placeholder="Jane Smith" autocomplete="name" />
+        <input type="text" id="name" placeholder="Jane Smith" autocomplete="name" aria-label="Your full name" />
+        <div class="field-error-msg" id="name-error"></div>
       </div>
       <div class="form-field">
         <label for="email">Work Email</label>
-        <input type="email" id="email" placeholder="jane@yourcompany.com" autocomplete="email" />
+        <input type="email" id="email" placeholder="jane@yourcompany.com" autocomplete="email" aria-label="Your work email address" />
+        <div class="field-error-msg" id="email-error"></div>
       </div>
       <div class="form-field">
-        <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" autocomplete="tel" />
+        <label for="phone">Phone Number <span style="font-weight:400; text-transform:none; letter-spacing:0; opacity:0.6;">(optional)</span></label>
+        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" autocomplete="tel" aria-label="Your phone number (optional)" />
       </div>
-      <button class="form-submit" onclick="submitForm()">Request Access</button>
+      <button class="form-submit" onclick="submitForm()" aria-label="Submit early access request">Request Access</button>
     </div>
 
     <div class="ea-confirmation" id="ea-confirmation">
-      <div class="check">✓</div>
+      <div class="check">&check;</div>
       <h3>You're on the list.</h3>
       <p>Thank you. Our team will contact you shortly.</p>
     </div>
@@ -988,7 +1151,7 @@
   <div class="footer-links">
     <a href="#">Privacy Policy</a>
     <a href="#">Terms</a>
-    <a href="#">Contact</a>
+    <a href="mailto:vijay@delfee.co,saravanan@delfee.co?subject=SpendLens%20Contact">Contact</a>
   </div>
 </footer>
 
@@ -1004,26 +1167,119 @@
 
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-  // Form submission
+  // Mobile nav
+  function toggleMobileNav() {
+    const btn = document.querySelector('.nav-hamburger');
+    const overlay = document.getElementById('mobile-nav');
+    btn.classList.toggle('open');
+    overlay.classList.toggle('open');
+    document.body.style.overflow = overlay.classList.contains('open') ? 'hidden' : '';
+  }
+  function closeMobileNav() {
+    document.querySelector('.nav-hamburger').classList.remove('open');
+    document.getElementById('mobile-nav').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Form validation and submission
+  const FREE_DOMAINS = ['gmail.com','yahoo.com','hotmail.com','outlook.com','aol.com','icloud.com','protonmail.com','mail.com'];
+
+  function clearError(fieldId) {
+    const input = document.getElementById(fieldId);
+    const errorEl = document.getElementById(fieldId + '-error');
+    if (input) input.classList.remove('field-error');
+    if (errorEl) { errorEl.textContent = ''; errorEl.classList.remove('visible'); }
+  }
+
+  function showError(fieldId, msg) {
+    const input = document.getElementById(fieldId);
+    const errorEl = document.getElementById(fieldId + '-error');
+    if (input) input.classList.add('field-error');
+    if (errorEl) { errorEl.textContent = msg; errorEl.classList.add('visible'); }
+  }
+
   function submitForm() {
+    clearError('name');
+    clearError('email');
+
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    if (!name || !email) {
-      alert('Please enter your name and email.');
-      return;
+    let valid = true;
+
+    if (!name) {
+      showError('name', 'Please enter your full name.');
+      valid = false;
     }
-    document.getElementById('ea-form').style.display = 'none';
-    document.getElementById('ea-confirmation').style.display = 'block';
+
+    if (!email) {
+      showError('email', 'Please enter your work email.');
+      valid = false;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showError('email', 'Please enter a valid email address.');
+        valid = false;
+      } else {
+        const domain = email.split('@')[1].toLowerCase();
+        if (FREE_DOMAINS.includes(domain)) {
+          showError('email', 'Please use your work email, not a personal one.');
+          valid = false;
+        }
+      }
+    }
+
+    if (!valid) return;
+
+    // Disable button while submitting
+    const submitBtn = document.querySelector('.form-submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    // Send via Web3Forms
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_key: '3bad0721-732a-40d1-9eb9-11244fe8e9aa',
+        subject: 'SpendLens Early Access Request',
+        from_name: 'SpendLens Website',
+        name: name,
+        email: email,
+        phone: phone || 'Not provided'
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        document.getElementById('ea-form').style.display = 'none';
+        document.getElementById('ea-confirmation').style.display = 'block';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Request Access';
+        showError('email', 'Something went wrong. Please try again.');
+      }
+    })
+    .catch(function() {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Request Access';
+      showError('email', 'Network error. Please try again.');
+    });
   }
 
-  // Smooth scroll for anchor links
+  // Clear errors on input
+  document.getElementById('name').addEventListener('input', function() { clearError('name'); });
+  document.getElementById('email').addEventListener('input', function() { clearError('email'); });
+
+  // Smooth scroll for anchor links with nav offset
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const target = document.querySelector(a.getAttribute('href'));
       if (target) {
         e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth' });
+        const offset = 68;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
       }
     });
   });

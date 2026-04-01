@@ -1,0 +1,342 @@
+import { useState, useEffect, useRef } from "react";
+
+const Shield = () => (
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+    <path d="M20 4L6 10V20C6 29 12.4 35.8 20 38C27.6 35.8 34 29 34 20V10L20 4Z" fill="#7F77DD" opacity="0.15"/>
+    <path d="M20 4L6 10V20C6 29 12.4 35.8 20 38C27.6 35.8 34 29 34 20V10L20 4Z" stroke="#7F77DD" strokeWidth="2" fill="none"/>
+    <path d="M14 20L18 24L26 16" stroke="#7F77DD" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const Check = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{flexShrink:0,marginTop:2}}>
+    <circle cx="8" cy="8" r="8" fill="#1D9E75" opacity="0.15"/>
+    <path d="M5 8L7 10L11 6" stroke="#1D9E75" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const X = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{flexShrink:0,marginTop:2}}>
+    <circle cx="8" cy="8" r="8" fill="#888780" opacity="0.15"/>
+    <path d="M6 6L10 10M10 6L6 10" stroke="#888780" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
+const stats = [
+  { val: "<5ms", label: "Proxy overhead" },
+  { val: "100%", label: "Request visibility" },
+  { val: "$0", label: "Surprise bills prevented" },
+  { val: "0", label: "Secrets leaked" },
+];
+
+const features = [
+  { title: "Policy engine (OPA)", desc: "Real-time allow/deny decisions per request using Rego policies. Block models, enforce budgets, restrict providers — all at the gateway." },
+  { title: "PII & secret detection", desc: "Scan prompts before they leave your network. Detect API keys, SSNs, emails, and 30+ PII types. Redact or block automatically." },
+  { title: "Full audit trail", desc: "Every request logged in ECS-compliant NDJSON. Who asked what, which model, token usage, cost, policy decisions — all queryable in Kibana." },
+  { title: "Cost attribution", desc: "Per-developer, per-team, per-project cost tracking. Set budget caps that actually enforce. No more $3k overnight surprises." },
+  { title: "Zero-config CLI", desc: "One command: `shieldai connect`. Works with Claude Code, Cursor, Copilot, and any OpenAI/Anthropic SDK-compatible tool." },
+  { title: "SSE streaming", desc: "Sub-millisecond overhead on streaming responses. Developers never feel the proxy — they just get guardrails for free." },
+];
+
+const tiers = [
+  {
+    name: "Starter",
+    price: "Free",
+    period: "up to 10 developers",
+    color: "#1D9E75",
+    desc: "For teams evaluating AI coding tools",
+    features: [
+      [true, "10 developer seats"],
+      [true, "Proxy + audit logging"],
+      [true, "3 built-in OPA policies"],
+      [true, "7-day log retention"],
+      [true, "CLI connect/disconnect"],
+      [true, "Community support"],
+      [false, "Custom OPA policies"],
+      [false, "SSO / SCIM"],
+      [false, "Budget enforcement"],
+    ],
+    cta: "Get started free",
+  },
+  {
+    name: "Team",
+    price: "$20",
+    period: "per developer / month",
+    color: "#7F77DD",
+    desc: "For teams shipping with AI daily",
+    popular: true,
+    features: [
+      [true, "Unlimited developers"],
+      [true, "Proxy + audit logging"],
+      [true, "Unlimited OPA policies"],
+      [true, "90-day log retention"],
+      [true, "PII & secret detection"],
+      [true, "Budget caps per team"],
+      [true, "Elastic / Kibana dashboards"],
+      [true, "Email + Slack support"],
+      [false, "SSO / SCIM"],
+    ],
+    cta: "Start 14-day trial",
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    period: "annual contract",
+    color: "#D85A30",
+    desc: "For orgs with compliance requirements",
+    features: [
+      [true, "Unlimited developers"],
+      [true, "Everything in Team"],
+      [true, "SSO (SAML/OIDC) + SCIM"],
+      [true, "Custom data retention"],
+      [true, "Self-hosted / air-gapped"],
+      [true, "Dedicated support engineer"],
+      [true, "SOC 2 Type II report"],
+      [true, "SLA: 99.9% uptime"],
+      [true, "Volume discounts"],
+    ],
+    cta: "Talk to sales",
+  },
+];
+
+const calcModels = {
+  "claude-haiku-4-5": { input: 0.80, output: 4.0, label: "Haiku 4.5" },
+  "claude-sonnet-4-6": { input: 3.0, output: 15.0, label: "Sonnet 4.6" },
+  "claude-opus-4-6": { input: 15.0, output: 75.0, label: "Opus 4.6" },
+  "gpt-4o": { input: 2.5, output: 10.0, label: "GPT-4o" },
+};
+
+const flowSteps = [
+  { label: "Developer", sub: "Claude Code / Cursor" },
+  { label: "ShieldAI proxy", sub: "Policy + PII scan" },
+  { label: "LLM provider", sub: "Anthropic / OpenAI" },
+  { label: "Audit log", sub: "Elastic / Kibana" },
+];
+
+export default function App() {
+  const [devs, setDevs] = useState(50);
+  const [model, setModel] = useState("claude-sonnet-4-6");
+  const [reqPerDev, setReqPerDev] = useState(80);
+  const [section, setSection] = useState("hero");
+  const [flowStep, setFlowStep] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setFlowStep(s => (s + 1) % 4), 1800);
+    return () => clearInterval(t);
+  }, []);
+
+  const m = calcModels[model];
+  const avgInputTokens = 2000;
+  const avgOutputTokens = 800;
+  const monthlyReqs = devs * reqPerDev * 22;
+  const monthlyCostLLM = monthlyReqs * ((avgInputTokens * m.input / 1e6) + (avgOutputTokens * m.output / 1e6));
+  const monthlyShieldAI = devs <= 10 ? 0 : devs * 20;
+  const savingsPercent = 15;
+  const estimatedSavings = monthlyCostLLM * savingsPercent / 100;
+
+  const s = {
+    page: { fontFamily: "system-ui, -apple-system, sans-serif", color: "var(--color-text-primary)", maxWidth: 720, margin: "0 auto", padding: "0 0 40px" },
+    hero: { textAlign: "center", padding: "32px 0 24px" },
+    h1: { fontSize: 28, fontWeight: 500, margin: "12px 0 8px", lineHeight: 1.25 },
+    sub: { fontSize: 15, color: "var(--color-text-secondary)", lineHeight: 1.6, maxWidth: 540, margin: "0 auto" },
+    statsRow: { display: "flex", gap: 8, justifyContent: "center", margin: "28px 0", flexWrap: "wrap" },
+    stat: { background: "var(--color-background-secondary)", borderRadius: 10, padding: "14px 20px", minWidth: 130, textAlign: "center", flex: "1 1 130px", maxWidth: 170 },
+    statVal: { fontSize: 22, fontWeight: 500, color: "#7F77DD" },
+    statLabel: { fontSize: 12, color: "var(--color-text-secondary)", marginTop: 2 },
+    section: { margin: "32px 0 0" },
+    h2: { fontSize: 20, fontWeight: 500, margin: "0 0 16px", textAlign: "center" },
+    featureGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 },
+    featureCard: { background: "var(--color-background-secondary)", borderRadius: 10, padding: "14px 16px" },
+    featureTitle: { fontSize: 14, fontWeight: 500, margin: "0 0 4px" },
+    featureDesc: { fontSize: 12, color: "var(--color-text-secondary)", lineHeight: 1.5 },
+    tierGrid: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, alignItems: "start" },
+    tierCard: (c, pop) => ({
+      background: "var(--color-background-secondary)",
+      borderRadius: 12,
+      padding: "20px 16px",
+      border: pop ? `1.5px solid ${c}` : "1px solid var(--color-border-tertiary)",
+      position: "relative",
+    }),
+    tierName: (c) => ({ fontSize: 13, fontWeight: 500, color: c, textTransform: "uppercase", letterSpacing: 0.5 }),
+    tierPrice: { fontSize: 28, fontWeight: 500, margin: "6px 0 2px" },
+    tierPeriod: { fontSize: 12, color: "var(--color-text-secondary)" },
+    tierDesc: { fontSize: 12, color: "var(--color-text-secondary)", margin: "10px 0", lineHeight: 1.4 },
+    tierFeature: { display: "flex", gap: 6, fontSize: 12, margin: "6px 0", lineHeight: 1.4 },
+    tierCta: (c) => ({
+      display: "block", textAlign: "center", marginTop: 16, padding: "10px 0",
+      borderRadius: 8, background: c, color: "#fff", fontSize: 13, fontWeight: 500,
+      border: "none", cursor: "pointer", width: "100%",
+    }),
+    badge: (c) => ({
+      position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)",
+      background: c, color: "#fff", fontSize: 10, fontWeight: 500, padding: "2px 10px",
+      borderRadius: 10, whiteSpace: "nowrap",
+    }),
+    calcBox: { background: "var(--color-background-secondary)", borderRadius: 12, padding: "20px" },
+    slider: { width: "100%", accentColor: "#7F77DD" },
+    select: {
+      padding: "6px 10px", borderRadius: 6, border: "1px solid var(--color-border-secondary)",
+      background: "var(--color-background-primary)", color: "var(--color-text-primary)",
+      fontSize: 13,
+    },
+    resultRow: { display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--color-border-tertiary)", fontSize: 13 },
+    flowRow: { display: "flex", alignItems: "center", justifyContent: "center", gap: 6, margin: "24px 0", flexWrap: "wrap" },
+    flowBox: (active) => ({
+      padding: "10px 14px", borderRadius: 8, textAlign: "center", minWidth: 120,
+      background: active ? "#7F77DD" : "var(--color-background-secondary)",
+      color: active ? "#fff" : "var(--color-text-primary)",
+      transition: "all 0.4s ease",
+      transform: active ? "scale(1.05)" : "scale(1)",
+    }),
+    flowArrow: { color: "var(--color-text-tertiary)", fontSize: 18 },
+    flowLabel: { fontSize: 13, fontWeight: 500 },
+    flowSub: { fontSize: 11, opacity: 0.8, marginTop: 2 },
+    code: {
+      display: "block", background: "var(--color-background-secondary)", borderRadius: 8,
+      padding: "14px 16px", fontFamily: "var(--font-mono)", fontSize: 13, margin: "16px auto",
+      maxWidth: 400, textAlign: "center", color: "var(--color-text-primary)",
+      border: "1px solid var(--color-border-tertiary)",
+    },
+  };
+
+  return (
+    <div style={s.page}>
+      <div style={s.hero}>
+        <Shield />
+        <h1 style={s.h1}>Your developers use AI coding tools.<br/>Do you know what they're sending?</h1>
+        <p style={s.sub}>
+          ShieldAI is an invisible guardrails layer between your developers and LLM providers.
+          Policy enforcement, PII detection, cost tracking, and full audit — with zero friction.
+        </p>
+        <div style={s.flowRow}>
+          {flowSteps.map((step, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span style={s.flowArrow}>&rarr;</span>}
+              <div style={s.flowBox(flowStep === i)}>
+                <div style={s.flowLabel}>{step.label}</div>
+                <div style={s.flowSub}>{step.sub}</div>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+        <code style={s.code}>eval $(shieldai connect) &nbsp;&nbsp;← that's it</code>
+      </div>
+
+      <div style={s.statsRow}>
+        {stats.map((st, i) => (
+          <div key={i} style={s.stat}>
+            <div style={s.statVal}>{st.val}</div>
+            <div style={s.statLabel}>{st.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={s.section}>
+        <h2 style={s.h2}>What ShieldAI does</h2>
+        <div style={s.featureGrid}>
+          {features.map((f, i) => (
+            <div key={i} style={s.featureCard}>
+              <div style={s.featureTitle}>{f.title}</div>
+              <div style={s.featureDesc}>{f.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{...s.section, marginTop: 40}}>
+        <h2 style={s.h2}>Pricing</h2>
+        <div style={s.tierGrid}>
+          {tiers.map((t, i) => (
+            <div key={i} style={s.tierCard(t.color, t.popular)}>
+              {t.popular && <div style={s.badge(t.color)}>Most popular</div>}
+              <div style={s.tierName(t.color)}>{t.name}</div>
+              <div style={s.tierPrice}>{t.price}</div>
+              <div style={s.tierPeriod}>{t.period}</div>
+              <div style={s.tierDesc}>{t.desc}</div>
+              {t.features.map(([has, label], j) => (
+                <div key={j} style={s.tierFeature}>
+                  {has ? <Check /> : <X />}
+                  <span style={{ color: has ? "var(--color-text-primary)" : "var(--color-text-tertiary)" }}>{label}</span>
+                </div>
+              ))}
+              <button style={s.tierCta(t.color)}>{t.cta}</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{...s.section, marginTop: 40}}>
+        <h2 style={s.h2}>Cost calculator</h2>
+        <div style={s.calcBox}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+            <div>
+              <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 4 }}>Developers</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input type="range" min={5} max={500} value={devs} onChange={e => setDevs(+e.target.value)} style={s.slider} />
+                <span style={{ fontSize: 14, fontWeight: 500, minWidth: 32 }}>{devs}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 4 }}>Requests / dev / day</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input type="range" min={10} max={300} value={reqPerDev} onChange={e => setReqPerDev(+e.target.value)} style={s.slider} />
+                <span style={{ fontSize: 14, fontWeight: 500, minWidth: 32 }}>{reqPerDev}</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 4 }}>Primary model</div>
+            <select value={model} onChange={e => setModel(e.target.value)} style={s.select}>
+              {Object.entries(calcModels).map(([k, v]) => (
+                <option key={k} value={k}>{v.label} (${v.input} / ${v.output} per MTok)</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ borderTop: "1px solid var(--color-border-tertiary)", paddingTop: 12 }}>
+            <div style={s.resultRow}>
+              <span>Monthly LLM requests</span>
+              <span style={{ fontWeight: 500 }}>{monthlyReqs.toLocaleString()}</span>
+            </div>
+            <div style={s.resultRow}>
+              <span>Estimated LLM spend</span>
+              <span style={{ fontWeight: 500 }}>${monthlyCostLLM.toLocaleString(undefined, {maximumFractionDigits: 0})}/mo</span>
+            </div>
+            <div style={s.resultRow}>
+              <span>ShieldAI cost</span>
+              <span style={{ fontWeight: 500, color: "#1D9E75" }}>{monthlyShieldAI === 0 ? "Free (≤10 devs)" : `$${monthlyShieldAI.toLocaleString()}/mo`}</span>
+            </div>
+            <div style={s.resultRow}>
+              <span>Est. savings from policy enforcement (15%)</span>
+              <span style={{ fontWeight: 500, color: "#1D9E75" }}>${estimatedSavings.toLocaleString(undefined, {maximumFractionDigits: 0})}/mo</span>
+            </div>
+            <div style={{...s.resultRow, borderBottom: "none", fontSize: 14 }}>
+              <span style={{ fontWeight: 500 }}>Net ROI</span>
+              <span style={{ fontWeight: 500, color: monthlyShieldAI > 0 && estimatedSavings > monthlyShieldAI ? "#1D9E75" : "var(--color-text-primary)" }}>
+                {monthlyShieldAI === 0
+                  ? `Save $${estimatedSavings.toLocaleString(undefined, {maximumFractionDigits: 0})}/mo for free`
+                  : estimatedSavings > monthlyShieldAI
+                    ? `+$${(estimatedSavings - monthlyShieldAI).toLocaleString(undefined, {maximumFractionDigits: 0})}/mo net savings`
+                    : `$${monthlyShieldAI.toLocaleString()}/mo for full governance`
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{...s.section, textAlign: "center", marginTop: 40 }}>
+        <h2 style={{...s.h2, marginBottom: 8}}>Ready in 5 minutes</h2>
+        <p style={{...s.sub, marginBottom: 16}}>
+          No SDK changes. No code changes. No vendor lock-in.<br/>
+          Works with Claude Code, Cursor, Copilot, and any OpenAI-compatible tool.
+        </p>
+        <code style={{...s.code, maxWidth: 480}}>
+          brew install shieldai/tap/shieldai && shieldai connect
+        </code>
+        <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", marginTop: 12 }}>
+          Questions? hello@shieldai.dev &nbsp;|&nbsp; docs.shieldai.dev &nbsp;|&nbsp; github.com/shieldai
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -11,7 +11,7 @@ This repository hosts two Delfee marketing products:
 **Contact:** vijay@delfee.co, saravanan@delfee.co
 **Domain:** delfee.co (via `CNAME`)
 **Hosting:** GitHub Pages
-**GA4 Measurement ID:** G-M4Q7H8BF1S
+**GA4 Measurement ID:** G-*
 
 ---
 

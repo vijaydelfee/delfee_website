@@ -2,8 +2,7 @@
 packages/marketing-site/node_modules/
 
 # Next.js build output
-packages/marketing-site/.next/
-packages/marketing-site/out/
+#packages/marketing-site/.next/
 
 # Environment files
 .env

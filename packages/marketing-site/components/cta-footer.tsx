@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { CodeBlock } from "./code-block";
 
 export function CtaFooter() {
@@ -14,13 +13,13 @@ export function CtaFooter() {
         </div>
 
         <p className="mt-6 text-sm" style={{ color: "var(--text-secondary)" }}>
-          5,000 free credits. No credit card required. No tiers to navigate.
+          One command to connect. No code changes required.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Link href="/pricing" className="btn-primary">
-            Start free
-          </Link>
+          <a href="mailto:vijay@delfee.co,saravanan@delfee.co?subject=ShieldAI%20Contact" className="btn-primary">
+            Contact us
+          </a>
           <a href="mailto:vijay@delfee.co,saravanan@delfee.co?subject=ShieldAI%20Sales" className="btn-ghost">
             Talk to sales
           </a>

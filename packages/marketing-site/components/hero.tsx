@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import Link from "next/link";
 import { CodeBlock } from "./code-block";
 import { flowSteps } from "@/lib/pricing";
 
@@ -43,7 +42,7 @@ export function Hero() {
             style={{ color: "var(--text-secondary)" }}
           >
             ShieldAI is an invisible guardrails layer between your developers and LLM providers.
-            Policy enforcement, PII detection, cost tracking, and full audit trail — with zero developer friction.
+            Policy enforcement, PII detection, and full audit trail — with zero developer friction.
           </motion.p>
 
           {/* Flow diagram */}
@@ -56,7 +55,7 @@ export function Hero() {
             {flowSteps.map((step, i) => (
               <div key={step.label} className="flex items-center gap-2 sm:gap-3">
                 {i > 0 && (
-                  <span className="text-lg" style={{ color: "var(--muted)" }}>
+                  <span className="hidden text-lg sm:inline" style={{ color: "var(--muted)" }}>
                     &rarr;
                   </span>
                 )}
@@ -93,12 +92,9 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="mt-8 flex flex-wrap items-center justify-center gap-4"
           >
-            <Link href="/pricing" className="btn-primary">
-              Start free — 5,000 credits
-            </Link>
-            <Link href="/demo" className="btn-ghost">
-              See the demo
-            </Link>
+            <a href="mailto:vijay@delfee.co,saravanan@delfee.co?subject=ShieldAI%20Contact" className="btn-primary">
+              Contact us
+            </a>
           </motion.div>
         </div>
       </div>

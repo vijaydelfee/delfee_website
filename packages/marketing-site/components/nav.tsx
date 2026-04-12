@@ -6,9 +6,6 @@ import { ThemeToggle } from "./theme-toggle";
 
 const links = [
   { label: "Product", href: "/#features" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Docs", href: "/docs" },
-  { label: "Demo", href: "/demo" },
 ];
 
 export function Nav() {
@@ -27,13 +24,20 @@ export function Nav() {
         }}
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 text-[var(--text)] no-underline">
-          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+        <Link href="/" className="flex items-center gap-2.5 text-[var(--text)] no-underline" aria-label="ShieldAI by Delfee — home">
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none" aria-hidden="true">
             <path d="M20 4L6 10V20C6 29 12.4 35.8 20 38C27.6 35.8 34 29 34 20V10L20 4Z" fill="var(--accent)" opacity="0.15" />
             <path d="M20 4L6 10V20C6 29 12.4 35.8 20 38C27.6 35.8 34 29 34 20V10L20 4Z" stroke="var(--accent)" strokeWidth="2" fill="none" />
             <path d="M14 20L18 24L26 16" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span className="text-lg font-bold tracking-tight">ShieldAI</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logos/ShieldAI.png"
+            alt="ShieldAI"
+            height={22}
+            className="h-[22px] w-auto select-none"
+            draggable={false}
+          />
           <span className="ml-1 text-xs font-normal" style={{ color: "var(--muted)" }}>by Delfee</span>
         </Link>
 
@@ -49,31 +53,14 @@ export function Nav() {
               {l.label}
             </Link>
           ))}
-          <a
-            href="https://github.com/shieldai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm font-medium transition-colors hover:text-[var(--accent)]"
-            style={{ color: "var(--muted)" }}
-            aria-label="ShieldAI on GitHub"
-          >
-            GitHub
-            <svg className="ml-1 inline-block" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M3.5 1.5H10.5V8.5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M10.5 1.5L1.5 10.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </a>
         </div>
 
         {/* Desktop right */}
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
-          <Link href="/demo" className="btn-ghost !py-2 !px-4 !text-xs">
-            Sign in
-          </Link>
-          <Link href="/pricing" className="btn-primary !py-2 !px-4 !text-xs">
-            Start free
-          </Link>
+          <a href="mailto:vijay@delfee.co,saravanan@delfee.co?subject=ShieldAI%20Contact" className="btn-primary !py-2 !px-4 !text-xs">
+            Contact us
+          </a>
         </div>
 
         {/* Mobile hamburger */}
@@ -126,13 +113,13 @@ export function Nav() {
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/pricing"
+          <a
+            href="mailto:vijay@delfee.co,saravanan@delfee.co?subject=ShieldAI%20Contact"
             onClick={() => setMenuOpen(false)}
             className="btn-primary mt-4"
           >
-            Start free — 5,000 credits
-          </Link>
+            Contact us
+          </a>
         </div>
       )}
     </>

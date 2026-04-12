@@ -2,16 +2,16 @@
 
 ## Project Overview
 
-This repository hosts two Delfee marketing products:
+This repository hosts the **Delfee** marketing presence. Delfee is the parent brand; ShieldAI and SpendLens are the two products under it.
 
-1. **SpendLens** (`index.html`) — AI cost observability landing page for SaaS companies
-2. **ShieldAI** (`packages/marketing-site/`) — Enterprise guardrails platform for AI coding tools (Claude Code, Cursor, Copilot)
+1. **ShieldAI** (`packages/marketing-site/`) — Primary site at delfee.co. Enterprise guardrails platform for AI coding tools (Claude Code, Cursor, Copilot). Built as a Next.js 16 static export.
+2. **SpendLens** (`legacy/spendlens/index.html`) — Original AI cost observability landing page. Now archived under `legacy/spendlens/` and not served from delfee.co; preserved for reference and linked from the homepage's "Part of the Delfee platform" section.
 
 **Company:** Delfee (delfee.co)
 **Contact:** vijay@delfee.co, saravanan@delfee.co
 **Domain:** delfee.co (via `CNAME`)
-**Hosting:** GitHub Pages
-**GA4 Measurement ID:** G-*
+**Hosting:** GitHub Pages (deployed by `.github/workflows/deploy.yml`)
+**GA4 Measurement ID:** G-M4Q7H8BF1S (in ShieldAI Next.js layout via `next/script`)
 
 ---
 
@@ -19,62 +19,58 @@ This repository hosts two Delfee marketing products:
 
 ```
 delfee_website/
-├── index.html                  — SpendLens landing page (single-file static HTML)
-├── CNAME                       — Custom domain: delfee.co
-├── pricing.html                — ShieldAI pricing mockup (React component reference)
-├── CLAUDE.md                   — This file
+├── CNAME                            — Custom domain: delfee.co
+├── CLAUDE.md                        — This file
+├── .github/workflows/deploy.yml     — GitHub Pages CI/CD (Next.js → Pages)
+├── legacy/
+│   └── spendlens/
+│       ├── index.html               — Archived SpendLens landing (single-file static HTML)
+│       └── pricing.html             — Archived SpendLens pricing mockup
 └── packages/
-    └── marketing-site/         — ShieldAI Next.js marketing website
-        ├── app/                — Next.js App Router pages
-        │   ├── layout.tsx      — Root layout (nav, footer, fonts, theme)
-        │   ├── page.tsx        — Homepage (9 sections)
-        │   ├── pricing/        — Pricing page (credit-based model)
-        │   ├── docs/           — Documentation placeholder
-        │   ├── demo/           — Demo page with install instructions
-        │   ├── robots.ts       — SEO robots.txt
-        │   └── sitemap.ts      — SEO sitemap
-        ├── components/         — React components (nav, footer, sections, icons)
-        ├── lib/                — Data layer (pricing, token-pricing, metadata)
-        ├── public/             — Static assets (og-image.svg)
-        ├── tailwind.config.ts  — Design tokens
-        └── package.json        — Dependencies
+    └── marketing-site/              — ShieldAI Next.js marketing website (delfee.co)
+        ├── app/                     — Next.js App Router pages
+        │   ├── layout.tsx           — Root layout (nav, footer, fonts, GA4 via next/script)
+        │   ├── page.tsx             — Homepage (8 sections)
+        │   ├── robots.ts            — SEO robots.txt (delfee.co base, force-static)
+        │   └── sitemap.ts           — SEO sitemap (delfee.co base, force-static)
+        ├── components/              — React components (nav, footer, sections, icons)
+        ├── lib/                     — Data layer (features, metadata)
+        ├── public/
+        │   ├── og-image.svg         — OpenGraph card
+        │   └── logos/               — Brand wordmarks
+        │       ├── Delfee.png       — Gold parent-brand wordmark
+        │       ├── ShieldAI.png     — Silver product wordmark
+        │       └── Spendlens.png    — Silver product wordmark
+        ├── tailwind.config.ts       — Design tokens
+        └── package.json             — Dependencies
 ```
 
 ---
 
-## SpendLens (index.html)
+## SpendLens (archived — `legacy/spendlens/`)
 
-### Tech Stack
+The original SpendLens landing page is preserved at `legacy/spendlens/index.html` and `legacy/spendlens/pricing.html`. It is **not served from delfee.co** — the GitHub Pages deployment only ships the Next.js `out/` directory. The homepage's "Part of the Delfee platform" section links to `/legacy/spendlens/` so the page remains discoverable.
+
+### Tech Stack (reference only)
 - Single-file static HTML — no framework, no build tools
 - All CSS inline in `<style>`, all JS inline in `<script>`
 - Google Fonts: DM Serif Display, DM Sans
 - AOS library for scroll animations
-- Web3Forms for form submission (access key: 3bad0721-732a-40d1-9eb9-11244fe8e9aa)
+- Web3Forms for form submission (access key: 3bad0721-732a-40d1-9eb9-11244fe8e9aa — public by design)
 - GA4 (G-M4Q7H8BF1S) + Microsoft Clarity analytics
-
-### Design System
-| Variable       | Value     | Usage                        |
-|----------------|-----------|------------------------------|
-| `--navy`       | `#0A1628` | Primary background           |
-| `--gold`       | `#C9A84C` | Primary accent, CTAs         |
-| `--gray-bg`    | `#F8FAFC` | Light section backgrounds    |
-
-- Typography: DM Serif Display (headings), DM Sans (body)
-- Sharp corners, gold accents, dark premium aesthetic
-
-### Sections
-1. Nav (fixed, dark) → 2. Hero → 3. Stats (animated counters) → 4. Problem (before/after) → 5. How It Works → 6. Features (2×2) → 7. Calculator (savings estimator) → 8. Personas (CTO/CFO/Product) → 9. Early Access form → 10. Footer
+- Design tokens: `--navy #0A1628`, `--gold #C9A84C`, `--gray-bg #F8FAFC`; DM Serif Display (headings) + DM Sans (body)
 
 ---
 
 ## ShieldAI (packages/marketing-site/)
 
 ### Tech Stack
-- **Next.js 14** (App Router) with TypeScript strict mode
+- **Next.js 16** (App Router) with TypeScript strict mode. **Requires Node.js ≥ 20.9.0** locally and in CI.
 - **Tailwind CSS** + CSS variables for dark/light theming
 - **Framer Motion** for scroll-triggered animations (gated by `prefers-reduced-motion`)
-- Static export (`output: 'export'`) — no server-side features
-- All images as inline SVGs — zero external image dependencies
+- Static export (`output: 'export'`, `images.unoptimized: true`) — no server-side features
+- Metadata route handlers (`app/robots.ts`, `app/sitemap.ts`) **must declare `export const dynamic = "force-static"`** — Next 16 refuses to build them under `output: 'export'` otherwise.
+- All decorative images are inline SVG. Brand wordmarks (Delfee, ShieldAI, Spendlens) are PNGs in `public/logos/`, rendered with plain `<img>` (Next/Image is unnecessary in static export and adds noise).
 - Fonts: Inter (body), JetBrains Mono (code) via `next/font/google`
 
 ### Design System
@@ -83,28 +79,40 @@ delfee_website/
 - Dark: bg `#0A0A0B`, surface `#141416`, text `#E4E4E7`
 - Light: bg `#FFFFFF`, surface `#F4F4F5`, text `#18181B`
 - CSS variables defined in `app/globals.css`, swapped by `.dark` class
+- The fixed nav uses `rgba(var(--nav-bg), 0.85)` for its translucent backdrop. **`--nav-bg` must be defined as an RGB triple (not a hex color) in both `:root` and `.dark`** so the nav background tracks the theme — historically this was missing and the nav rendered black-on-black in light mode.
 
 ### Pages
-1. **/** — Homepage: Hero (animated flow diagram), Problem (3 pain points), How It Works (4 steps with code blocks + mock Kibana dashboard), Features (6 cards), Security Bar, Pricing Preview, Comparison Table, Social Proof, CTA Footer
-2. **/pricing** — Credit-based pricing: explainer animation, 5 credit packs (Starter free → Enterprise custom), interactive calculator with pack recommendations, enterprise add-ons, FAQ accordion
-3. **/docs** — Placeholder with sidebar navigation
-4. **/demo** — Video placeholder + installation instructions
+1. **/** — Homepage. Section order in `app/page.tsx`:
+   Hero → Problem → HowItWorks → Features → SecurityBar → Comparison → SocialProof ("Part of the Delfee platform") → CtaFooter
 
-### Pricing Model
-- Credit-based: 1 request = 1 credit = $0.01
-- Packs: Starter (5K free), Basic (10K/$80), Growth (50K/$350), Scale (200K/$1200), Enterprise (1M+ custom)
-- Pack recommendation algorithm in `lib/pricing.ts`
+The `/docs`, `/demo`, and `/pricing` routes have been removed. Nav, footer, hero CTAs, and the sitemap no longer reference them, and the route directories have been deleted. There is also no public GitHub link in the nav or footer (the upstream `github.com/shieldai` org doesn't exist yet). All CTAs link to mailto:vijay@delfee.co,saravanan@delfee.co.
 
 ### Product Context
-**ShieldAI** is an invisible guardrails layer for AI coding tools:
-- Policy enforcement via OPA/Rego
-- PII & secret detection before prompts leave the network
-- Per-developer cost attribution with budget caps
-- Full audit trail (ECS-compliant NDJSON) queryable in Kibana
-- Zero-config CLI: `eval $(shieldai connect)`
-- Supports Claude Code, Cursor, Copilot, any OpenAI/Anthropic SDK-compatible tool
+**ShieldAI** is an invisible guardrails layer for AI coding tools. Marketing copy and feature claims must stay grounded in the actual product behavior documented in `~/vijay/workspace/elastic-projects/SpendLens/SpendLens/shieldai/CLAUDE.md`. Key facts (do not contradict):
+
+- **Architecture**: AI tool → CLI agent → local header-injection forwarder (127.0.0.1) → ShieldAI Go proxy (:8080) → upstream LLM. The forwarder injects `X-ShieldAI-Auth: <jwt>` so the upstream `Authorization: Bearer` passes through untouched. This is what makes it work with Claude Code's browser/OAuth login without dual-auth collisions.
+- **Policy engine**: OPA / Rego, hot-reloaded. Pipeline is preflight check → request content filters → upstream forward → postflight check → response content filters. Default `allow := false`. Gateway policy lives in `packages/policy-engine/policies/proxy/`.
+- **Filters**: Built-in PII detection (`internal/filter/pii.go`) and secret detection (`internal/filter/secrets.go`). **Fail-closed by default** (`FAIL_MODE=closed`).
+- **Audit**: ECS-compliant NDJSON. **SHA-256 hashes** of request/response bodies — never raw prompts, never API keys, `Authorization` header redacted. Bind-mounted to host, shipped via Filebeat/Elastic Agent → Elasticsearch. Audit-service consumes Kafka → ClickHouse + MinIO + Postgres.
+- **CLI v0.3.0** modes: `eval $(shieldai connect)` (background forwarder), `shieldai connect -- claude` (subprocess), `shieldai shell`, `shieldai status`, `shieldai policies`, `shieldai config`. Config layers merge: CLI flag > project `.shieldai.yaml` > user `~/.config/shieldai/config.yaml` > default.
+- **Providers**: Anthropic, OpenAI (v0 + v1 SDKs via `OPENAI_API_BASE` and `OPENAI_BASE_URL`), Google Gemini.
+- **Other components**: gRPC sandbox service for isolated code execution, Node/TS admin API, React admin dashboard with Dashboard / Policies / Teams / Audit Log / Budgets / Settings pages.
+- **Security posture**: mTLS between CLI and proxy, no raw bodies stored, fail-closed default, self-hosted/air-gapped option.
+
+Source-of-truth data lives in `lib/pricing.ts` (`productFeatures`, `flowSteps`, `stats`). When adding a marketing claim, anchor it in the engineering CLAUDE.md or in `shieldai/packages/proxy/internal/`.
 
 Target buyers: CISOs and engineering leaders at companies using AI coding tools.
+
+### Brand & logos
+Wordmark PNGs in `public/logos/` (sourced from `~/vijay/workspace/elastic-projects/SpendLens/SpendLens/shieldai/logos/`):
+
+| Logo | Color | Usage |
+|------|-------|-------|
+| `Delfee.png` | Gold | Footer copyright row (parent brand) |
+| `ShieldAI.png` | Silver | Nav header next to shield SVG icon; SocialProof "this site" card |
+| `Spendlens.png` | Silver | SocialProof "Delfee platform" sibling product card |
+
+Render with plain `<img>` (with `// eslint-disable-next-line @next/next/no-img-element`) at fixed pixel heights — never via `next/image`. The static export does no optimization, so wrapping adds boilerplate without benefit.
 
 ### Build Commands
 ```bash
@@ -116,38 +124,27 @@ npm run lint     # ESLint
 ```
 
 ### Conventions
-- Server components by default; `"use client"` only for: hero, theme-toggle, nav, credit-calculator, how-it-works, credit-explainer, comparison
+- Server components by default; `"use client"` only for: hero, theme-toggle, nav, how-it-works, comparison, features, problem (last two require client because of framer-motion `useReducedMotion` + `whileInView`). The SocialProof / "Delfee platform" section is intentionally a server component.
 - No `dangerouslySetInnerHTML` (except JSON-LD structured data on pricing page)
 - No `console.log` — structured logging only
-- No external analytics scripts yet (PostHog integration planned)
+- GA4 (`G-M4Q7H8BF1S`) loaded via `next/script` in `app/layout.tsx`. PostHog integration still planned.
+- `metadataBase` and `lib/metadata.ts` `BASE_URL` must be `https://delfee.co`. `app/robots.ts` and `app/sitemap.ts` must reference `https://delfee.co`.
 - All animations respect `prefers-reduced-motion`
+- No fabricated social proof. Do not add fake customer logos, fake quotes, or fake "trusted by" sections — use the real Delfee product family (ShieldAI + SpendLens) instead until real customer references exist.
 - Contact emails: vijay@delfee.co, saravanan@delfee.co
 
 ---
 
-## GitHub Pages Migration Plan
+## GitHub Pages Deployment
 
-The site is currently served from `index.html` at the repo root. To serve the ShieldAI Next.js site instead:
+delfee.co is served from the ShieldAI Next.js static export, deployed via GitHub Actions.
 
-### Option A: Next.js static export at root (recommended)
-1. Build: `cd packages/marketing-site && npm run build`
-2. Copy `packages/marketing-site/out/*` to the repo root
-3. Add `.nojekyll` file at root (prevents GitHub Pages from processing with Jekyll)
-4. Keep `CNAME` file at root
-5. Commit and push — GitHub Pages serves the Next.js static output
-
-### Option B: GitHub Actions workflow
-1. Create `.github/workflows/deploy.yml` that:
-   - Checks out the repo
-   - Runs `npm ci && npm run build` in `packages/marketing-site/`
-   - Deploys `out/` directory to `gh-pages` branch using `actions/deploy-pages`
-2. Configure repo Settings → Pages → Source: GitHub Actions
-3. This keeps the repo root clean and automates builds on push
-
-### What to preserve
-- `CNAME` file (delfee.co domain)
-- GA4 measurement ID: G-M4Q7H8BF1S
-- SpendLens `index.html` can be moved to `legacy/` or kept as a separate product landing
+- Workflow: `.github/workflows/deploy.yml` (triggers on push to `main` and `prod/website`, plus manual dispatch)
+- Build: `npm ci && npm run lint && npm run build` inside `packages/marketing-site/`
+- Output: `packages/marketing-site/out/`, with the root `CNAME` and a generated `.nojekyll` copied in by the workflow
+- Deploy: `actions/upload-pages-artifact` + `actions/deploy-pages`
+- Repo Settings → Pages → Source must be set to **GitHub Actions** (one-time manual config)
+- Legacy SpendLens lives at `legacy/spendlens/` and is no longer served
 
 ---
 
@@ -156,6 +153,12 @@ The site is currently served from `index.html` at the repo root. To serve the Sh
 - TypeScript strict mode for all ShieldAI code
 - No `any` types
 - All forms must validate input client-side
-- Keep total JS bundle under 150KB (gzipped) for ShieldAI site
+- Keep total JS bundle under 150KB (gzipped) for ShieldAI site. Current first-load JS (last measured under Next 14): `/` ≈ 138 kB, `/pricing` ≈ 126 kB. Re-measure after the Next 16 upgrade.
 - All interactive elements must be keyboard-navigable
-- Color contrast ratio 4.5:1 minimum in both themes
+- Color contrast ratio 4.5:1 minimum in both themes. Note: `--accent` (`#7F77DD`) on white is ~3.7:1 — only use as button background (white text on accent passes) or large text, never as body text on white.
+
+---
+
+## Source of truth for product claims
+
+The engineering CLAUDE.md at `~/vijay/workspace/elastic-projects/SpendLens/SpendLens/shieldai/CLAUDE.md` is the canonical reference for what ShieldAI actually does. Before adding or changing a feature claim, security claim, architecture claim, or CLI behavior on the marketing site, verify it against that file or against the actual code under `shieldai/packages/`. If a marketing claim cannot be sourced, do not ship it.

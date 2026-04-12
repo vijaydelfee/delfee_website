@@ -32,7 +32,7 @@ const rows = [
     cloudflare: "No",
   },
   {
-    feature: "Per-developer cost attribution",
+    feature: "Per-developer usage attribution",
     shieldai: "Yes",
     diy: "Custom",
     portkey: "Yes",
@@ -60,13 +60,6 @@ const rows = [
     cloudflare: "Hours",
   },
   {
-    feature: "Pricing model",
-    shieldai: "Credits (usage-based)",
-    diy: "$500K+/yr (eng cost)",
-    portkey: "Tiers ($2K-5K/mo)",
-    cloudflare: "Free + usage",
-  },
-  {
     feature: "Feature gating",
     shieldai: "None — all included",
     diy: "N/A",
@@ -76,7 +69,7 @@ const rows = [
 ];
 
 function CellStyle({ value, isShieldai }: { value: string; isShieldai: boolean }) {
-  const isPositive = value === "Yes" || value === "5 minutes" || value === "None — all included" || value === "Credits (usage-based)";
+  const isPositive = value === "Yes" || value === "5 minutes" || value === "None — all included";
   return (
     <span
       className={isShieldai ? "font-medium" : ""}

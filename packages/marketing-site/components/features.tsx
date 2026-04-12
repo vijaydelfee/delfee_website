@@ -5,7 +5,7 @@ import { productFeatures } from "@/lib/pricing";
 import { PolicyIcon } from "./icons/policy";
 import { PiiIcon } from "./icons/pii";
 import { AuditIcon } from "./icons/audit";
-import { CostIcon } from "./icons/cost";
+import { UsageIcon } from "./icons/usage";
 import { CliIcon } from "./icons/cli";
 import { StreamingIcon } from "./icons/streaming";
 
@@ -13,7 +13,7 @@ const icons = [
   <PolicyIcon key="policy" size={28} />,
   <PiiIcon key="pii" size={28} />,
   <AuditIcon key="audit" size={28} />,
-  <CostIcon key="cost" size={28} />,
+  <UsageIcon key="usage" size={28} />,
   <CliIcon key="cli" size={28} />,
   <StreamingIcon key="streaming" size={28} />,
 ];
@@ -35,7 +35,7 @@ export function Features() {
             Everything between your developers and the LLM
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm" style={{ color: "var(--text-secondary)" }}>
-            Every feature is included with every credit. No tier gating.
+            Every feature is included. No tier gating.
           </p>
         </motion.div>
 

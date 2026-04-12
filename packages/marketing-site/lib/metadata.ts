@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
-const SITE_NAME = "ShieldAI";
+const SITE_NAME = "ShieldAI by Delfee";
 const SITE_DESCRIPTION =
-  "Guardrails for AI coding tools. Policy enforcement, PII detection, cost tracking, and full audit trail — with zero developer friction.";
-const BASE_URL = "https://shieldai.dev";
+  "Guardrails for AI coding tools. Policy enforcement, PII detection, and full audit trail — with zero developer friction.";
+const BASE_URL = "https://delfee.co";
 
 interface PageMeta {
   title: string;

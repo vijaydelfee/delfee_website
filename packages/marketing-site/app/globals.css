@@ -14,6 +14,8 @@
     --accent-light: #9b94e8;
     --green: #1d9e75;
     --orange: #d85a30;
+    /* RGB triple consumed by nav.tsx as rgba(var(--nav-bg), 0.85) */
+    --nav-bg: 255, 255, 255;
   }
 
   .dark {
@@ -27,6 +29,7 @@
     --accent-light: #9b94e8;
     --green: #1d9e75;
     --orange: #d85a30;
+    --nav-bg: 10, 10, 11;
   }
 
   html {

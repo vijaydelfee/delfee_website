@@ -1,77 +1,48 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CodeBlock } from "./code-block";
 
 const connectCode = `eval $(shieldai connect)
-# Sets ANTHROPIC_BASE_URL, OPENAI_BASE_URL to proxy
-# Injects ShieldAI JWT for authentication
-# Works with Claude Code, Cursor, Copilot, any SDK`;
+# Spawns a local header-injection forwarder on 127.0.0.1
+# Points ANTHROPIC_BASE_URL / OPENAI_BASE_URL / GEMINI_API_BASE
+#   at the forwarder (not the proxy directly)
+# Forwarder adds X-ShieldAI-Auth: <jwt> on every request
+# Authorization: Bearer passes through untouched to the LLM
+# Works with Claude Code OAuth, Cursor, Copilot, any SDK`;
 
-const regoCode = `# Block prompts containing secrets
-deny["prompt contains API key"] {
-    regex.match(\`sk-[a-zA-Z0-9]{48}\`, input.prompt)
+const regoCode = `package shieldai.proxy
+
+default allow := false
+
+# Block prompts containing API keys before they leave the network
+deny[msg] {
+    regex.match(\`sk-[a-zA-Z0-9]{48}\`, input.request.prompt)
+    msg := "prompt contains an API key"
 }
 
-# Enforce budget: max $50/day per developer
-deny["daily budget exceeded"] {
-    data.usage[input.user_id].today_usd > 50
+# Enforce per-developer daily budget at the gateway
+deny[msg] {
+    data.usage[input.user.id].today_usd > input.user.budget_usd
+    msg := sprintf("daily budget exceeded for %s", [input.user.id])
+}
+
+allow {
+    not deny[_]
 }`;
-
-function CreditCounter() {
-  const [count, setCount] = useState(5000);
-  const ref = useRef<HTMLDivElement>(null);
-  const hasAnimated = useRef(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          setCount(4999);
-        }
-      },
-      { threshold: 0.5 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={ref} className="flex flex-col items-center gap-3">
-      <div
-        className="rounded-lg border px-8 py-4 text-center font-mono"
-        style={{ background: "var(--surface)", borderColor: "var(--border)" }}
-      >
-        <div className="text-xs" style={{ color: "var(--muted)" }}>Credits remaining</div>
-        <div className="mt-1 text-3xl font-bold tabular-nums" style={{ color: "var(--accent)" }}>
-          {count.toLocaleString()}
-        </div>
-      </div>
-      <p className="text-center text-sm" style={{ color: "var(--text-secondary)" }}>
-        Each request through the proxy consumes 1 credit. 1 credit = $0.01.
-        That&apos;s a tenth of a cent per request — covering policy evaluation, PII scanning,
-        audit logging, and 90-day storage.
-      </p>
-    </div>
-  );
-}
 
 function MockDashboard() {
   const metrics = [
     { label: "Requests today", value: "12,847" },
     { label: "Active developers", value: "48" },
-    { label: "Credits used", value: "12,847" },
-    { label: "Cost today", value: "$128.47" },
+    { label: "Policies active", value: "12" },
+    { label: "Blocked", value: "3" },
   ];
 
   const events = [
-    { time: "14:03:22", user: "sarah.c", model: "sonnet-4.6", tokens: "3,241", cost: "$0.06", policy: "ALLOW" },
-    { time: "14:03:19", user: "mike.r", model: "haiku-4.5", tokens: "890", cost: "$0.004", policy: "ALLOW" },
-    { time: "14:03:15", user: "alex.t", model: "opus-4.6", tokens: "5,120", cost: "$0.46", policy: "DENY:budget" },
+    { time: "14:03:22", user: "sarah.c", model: "sonnet-4.6", tokens: "3,241", policy: "ALLOW" },
+    { time: "14:03:19", user: "mike.r", model: "haiku-4.5", tokens: "890", policy: "ALLOW" },
+    { time: "14:03:15", user: "alex.t", model: "opus-4.6", tokens: "5,120", policy: "DENY:budget" },
   ];
 
   return (
@@ -87,29 +58,6 @@ function MockDashboard() {
           </div>
         ))}
       </div>
-      {/* Cost by team bar chart */}
-      <div className="border-t p-3" style={{ borderColor: "var(--border)" }}>
-        <div className="mb-2 text-[10px] font-medium" style={{ color: "var(--muted)" }}>Cost by team</div>
-        <div className="space-y-1.5">
-          {[
-            { team: "Platform", pct: 45 },
-            { team: "Backend", pct: 30 },
-            { team: "Frontend", pct: 18 },
-            { team: "DevOps", pct: 7 },
-          ].map((bar) => (
-            <div key={bar.team} className="flex items-center gap-2">
-              <span className="w-16 text-[10px]" style={{ color: "var(--text-secondary)" }}>{bar.team}</span>
-              <div className="h-3 flex-1 overflow-hidden rounded-sm" style={{ background: "var(--border)" }}>
-                <div
-                  className="h-full rounded-sm"
-                  style={{ width: `${bar.pct}%`, background: "var(--accent)", opacity: 0.7 }}
-                />
-              </div>
-              <span className="w-8 text-right text-[10px] tabular-nums" style={{ color: "var(--muted)" }}>{bar.pct}%</span>
-            </div>
-          ))}
-        </div>
-      </div>
       {/* Recent events */}
       <div className="border-t p-3" style={{ borderColor: "var(--border)" }}>
         <div className="mb-2 text-[10px] font-medium" style={{ color: "var(--muted)" }}>Recent audit events</div>
@@ -121,7 +69,6 @@ function MockDashboard() {
                 <th className="pb-1 pr-3 text-left font-medium">User</th>
                 <th className="pb-1 pr-3 text-left font-medium">Model</th>
                 <th className="pb-1 pr-3 text-right font-medium">Tokens</th>
-                <th className="pb-1 pr-3 text-right font-medium">Cost</th>
                 <th className="pb-1 text-right font-medium">Decision</th>
               </tr>
             </thead>
@@ -132,7 +79,6 @@ function MockDashboard() {
                   <td className="pr-3">{e.user}</td>
                   <td className="pr-3 font-mono">{e.model}</td>
                   <td className="pr-3 text-right tabular-nums">{e.tokens}</td>
-                  <td className="pr-3 text-right tabular-nums">{e.cost}</td>
                   <td className="text-right">
                     <span
                       className="rounded px-1 py-0.5 font-mono text-[9px] font-medium"
@@ -162,28 +108,22 @@ export function HowItWorks() {
       number: "01",
       title: "Connect",
       description:
-        "Your developer's AI tools now route through ShieldAI. No code changes. No SDK modifications. No new IDE.",
+        "One command. ShieldAI's CLI agent spawns a local header-injection forwarder, points your provider SDKs at it, and adds the gateway JWT out-of-band — so OAuth and browser-login tools (Claude Code, Cursor, Copilot) keep working without dual-auth collisions.",
       content: <CodeBlock code={connectCode} language="bash" />,
     },
     {
       number: "02",
       title: "Enforce",
       description:
-        "OPA policies evaluate every request in real-time. Allow, deny, or modify — all configurable in Rego.",
+        "Every request hits an OPA preflight check, content filters for secrets and PII, then a postflight check on the response. Rego policies are hot-reloaded and version-controlled — no restarts, no policy drift, fail-closed by default.",
       content: <CodeBlock code={regoCode} language="rego" />,
     },
     {
       number: "03",
       title: "Observe",
       description:
-        "Every request generates an ECS-compliant audit event. Who, what, which model, how many tokens, what it cost, and what policy decided. Queryable in Kibana in seconds.",
+        "Every allowed request emits an ECS-compliant audit event. Who asked what, which model, how many tokens, and which policy decided — all with SHA-256 body hashes (never raw prompts, never API keys). Queryable in Kibana, ClickHouse, or your existing SIEM in seconds.",
       content: <MockDashboard />,
-    },
-    {
-      number: "04",
-      title: "1 credit consumed",
-      description: "",
-      content: <CreditCounter />,
     },
   ];
 

@@ -14,9 +14,9 @@ const products = [
   {
     name: "SpendLens",
     logo: "/logos/Spendlens.png",
-    tagline: "AI observability for SaaS",
+    tagline: "AI cost visibility for engineering teams",
     description:
-      "Tenant-level visibility and control over LLM usage. Full attribution of AI consumption across your customer base.",
+      "Per-developer, per-team visibility into AI coding tool costs. Know what Claude Code, Cursor, and Copilot actually cost your engineering org.",
     href: "/legacy/spendlens/",
     cta: "Learn more",
     current: false,

@@ -5,13 +5,13 @@
 This repository hosts the **Delfee** marketing presence. Delfee is the parent brand; ShieldAI and SpendLens are the two products under it.
 
 1. **ShieldAI** (`packages/marketing-site/`) — Primary site at delfee.co. Enterprise guardrails platform for AI coding tools (Claude Code, Cursor, Copilot). Built as a Next.js 16 static export.
-2. **SpendLens** (`legacy/spendlens/index.html`) — Original AI cost observability landing page. Now archived under `legacy/spendlens/` and not served from delfee.co; preserved for reference and linked from the homepage's "Part of the Delfee platform" section.
+2. **SpendLens** (`legacy/spendlens/index.html`) — AI cost visibility landing page for engineering teams. Redesigned with a "Dark Luxury Command Center" aesthetic (Bloomberg Terminal meets fintech). Framed for engineering leaders who need per-developer, per-team cost attribution across AI coding tools (Claude Code, Cursor, Copilot). Linked from the ShieldAI homepage's "Part of the Delfee platform" section.
 
 **Company:** Delfee (delfee.co)
 **Contact:** vijay@delfee.co, saravanan@delfee.co
 **Domain:** delfee.co (via `CNAME`)
 **Hosting:** GitHub Pages (deployed by `.github/workflows/deploy.yml`)
-**GA4 Measurement ID:** G-M4Q7H8BF1S (in ShieldAI Next.js layout via `next/script`)
+**GA4 Measurement ID:** G-M4Q7H8BF1S (in ShieldAI Next.js layout via `next/script`, and in SpendLens via inline `<script>` tags)
 
 ---
 
@@ -24,7 +24,7 @@ delfee_website/
 ├── .github/workflows/deploy.yml     — GitHub Pages CI/CD (Next.js → Pages)
 ├── legacy/
 │   └── spendlens/
-│       ├── index.html               — Archived SpendLens landing (single-file static HTML)
+│       ├── index.html               — SpendLens landing page (single-file static HTML, dark luxury design)
 │       └── pricing.html             — Archived SpendLens pricing mockup
 └── packages/
     └── marketing-site/              — ShieldAI Next.js marketing website (delfee.co)
@@ -47,18 +47,44 @@ delfee_website/
 
 ---
 
-## SpendLens (archived — `legacy/spendlens/`)
+## SpendLens (`legacy/spendlens/`)
 
-The original SpendLens landing page is preserved at `legacy/spendlens/index.html` and `legacy/spendlens/pricing.html`. It is **not served from delfee.co** — the GitHub Pages deployment only ships the Next.js `out/` directory. The homepage's "Part of the Delfee platform" section links to `/legacy/spendlens/` so the page remains discoverable.
+The SpendLens landing page lives at `legacy/spendlens/index.html`. It is **not served from delfee.co** — the GitHub Pages deployment only ships the Next.js `out/` directory. The ShieldAI homepage's "Part of the Delfee platform" section links to `/legacy/spendlens/` so the page remains discoverable. A pricing mockup is preserved at `legacy/spendlens/pricing.html`.
 
-### Tech Stack (reference only)
+### Product Framing
+SpendLens is positioned for **engineering teams** whose AI coding tool costs are unknown. The core message: developers use Claude Code, Cursor, and Copilot every day, but nobody knows what it costs. SpendLens is a transparent proxy that gives per-developer, per-team cost attribution, team budgets, and full audit trails. Target buyers: CTOs, VPs of Engineering, CFOs, and Engineering Managers.
+
+All content must stay grounded in the real product architecture documented in `~/vijay/workspace/elastic-projects/SpendLens/SpendLens/shieldai/CLAUDE.md`. Key product facts reflected on the page:
+- Go reverse proxy with middleware chain (auth → rate limit → audit → intercept)
+- OPA/Rego policy engine for budget enforcement and model restrictions
+- SSE streaming token extraction + 17-model pricing table for cost computation
+- ECS-compliant NDJSON audit with SHA-256 body hashes (never raw prompts/keys)
+- CLI connect command (`eval $(spendlens connect)`) — zero code changes for developers
+- Audit trail flows to Elasticsearch + ClickHouse + Kibana
+
+### Page Sections
+1. **Hero** — "Your Developers Use AI Daily. Do You Know What It Costs?" Canvas particle network background. Architecture diagram: Developer AI Tools → SpendLens Proxy (OPA Policy, Cost Track, Budget Cap, Route) → Providers → ECS Audit Trail.
+2. **Stats** — Scroll-triggered count-up: 70%+ (power-user spend), 10× (developer variance), 0% (teams with attribution today), 40%+ (cost reduction with visibility).
+3. **Problem** — Split: "Current Reality" (no visibility, no attribution, no budgets) vs "With SpendLens" (per-developer attribution, team budgets, full audit trail).
+4. **How It Works** — 4 items: Connect in One Command, Track Every Token Every Developer, Enforce Team Budgets at Gateway, Audit Everything Store Nothing Sensitive. Animated SVG diagram with 5-step proxy pipeline.
+5. **Features** — Bento grid with 4 cards: Per-Developer Cost Attribution, Team-Level AI Observability, Team Budget Guardrails, Engineering AI Cost Dashboard.
+6. **Personas** — Tab interface: CTO/VP Engineering (team spend overview), CFO/Finance (monthly AI tool spend by team), Engineering Manager (per-developer breakdown: @alice Claude Code $89/day, @bob Cursor $42/day, etc.).
+7. **Early Access** — Web3Forms form with animated gold gradient border.
+8. **Footer** — "AI Cost Visibility for Engineering Teams" tagline.
+
+### Tech Stack
 - Single-file static HTML — no framework, no build tools
 - All CSS inline in `<style>`, all JS inline in `<script>`
-- Google Fonts: DM Serif Display, DM Sans
-- AOS library for scroll animations
+- Google Fonts: Instrument Serif (headlines), JetBrains Mono (data/stats), Satoshi via CDN (body)
+- Canvas API for hero particle network and form submit particle burst
+- IntersectionObserver for scroll-triggered animations and active nav indicator
+- SVG diagrams with SMIL animations (animateMotion for flowing gold dots)
+- CSS glassmorphism (backdrop-filter: blur) on nav and cards
+- CSS 3D tilt on feature cards (perspective transform on hover)
 - Web3Forms for form submission (access key: 3bad0721-732a-40d1-9eb9-11244fe8e9aa — public by design)
-- GA4 (G-M4Q7H8BF1S) + Microsoft Clarity analytics
-- Design tokens: `--navy #0A1628`, `--gold #C9A84C`, `--gray-bg #F8FAFC`; DM Serif Display (headings) + DM Sans (body)
+- GA4 (G-M4Q7H8BF1S) via inline `<script>` tags in `<head>`
+- All animations respect `prefers-reduced-motion`
+- Design tokens: `--bg #09090C`, `--gold #D4A843`, `--gold-light #F0D078`, `--gold-deep #A67C2E`, `--silver #C0C0C8`, `--copper #C45C3E`, `--text #E8E8EE`, `--text-sec #9898A8`
 
 ---
 
@@ -125,7 +151,7 @@ npm run lint     # ESLint
 
 ### Conventions
 - Server components by default; `"use client"` only for: hero, theme-toggle, nav, how-it-works, comparison, features, problem (last two require client because of framer-motion `useReducedMotion` + `whileInView`). The SocialProof / "Delfee platform" section is intentionally a server component.
-- No `dangerouslySetInnerHTML` (except JSON-LD structured data on pricing page)
+- No `dangerouslySetInnerHTML`
 - No `console.log` — structured logging only
 - GA4 (`G-M4Q7H8BF1S`) loaded via `next/script` in `app/layout.tsx`. PostHog integration still planned.
 - `metadataBase` and `lib/metadata.ts` `BASE_URL` must be `https://delfee.co`. `app/robots.ts` and `app/sitemap.ts` must reference `https://delfee.co`.
@@ -153,7 +179,7 @@ delfee.co is served from the ShieldAI Next.js static export, deployed via GitHub
 - TypeScript strict mode for all ShieldAI code
 - No `any` types
 - All forms must validate input client-side
-- Keep total JS bundle under 150KB (gzipped) for ShieldAI site. Current first-load JS (last measured under Next 14): `/` ≈ 138 kB, `/pricing` ≈ 126 kB. Re-measure after the Next 16 upgrade.
+- Keep total JS bundle under 150KB (gzipped) for ShieldAI site. Only one page (`/`) exists now — re-measure after major dependency changes.
 - All interactive elements must be keyboard-navigable
 - Color contrast ratio 4.5:1 minimum in both themes. Note: `--accent` (`#7F77DD`) on white is ~3.7:1 — only use as button background (white text on accent passes) or large text, never as body text on white.
 
@@ -161,4 +187,4 @@ delfee.co is served from the ShieldAI Next.js static export, deployed via GitHub
 
 ## Source of truth for product claims
 
-The engineering CLAUDE.md at `~/vijay/workspace/elastic-projects/SpendLens/SpendLens/shieldai/CLAUDE.md` is the canonical reference for what ShieldAI actually does. Before adding or changing a feature claim, security claim, architecture claim, or CLI behavior on the marketing site, verify it against that file or against the actual code under `shieldai/packages/`. If a marketing claim cannot be sourced, do not ship it.
+The engineering CLAUDE.md at `~/vijay/workspace/elastic-projects/SpendLens/SpendLens/shieldai/CLAUDE.md` is the canonical reference for what ShieldAI and SpendLens actually do (they share the same underlying proxy/audit infrastructure). Before adding or changing a feature claim, security claim, architecture claim, or CLI behavior on either marketing site, verify it against that file or against the actual code under `shieldai/packages/`. If a marketing claim cannot be sourced, do not ship it.
